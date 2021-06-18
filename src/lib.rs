@@ -30,14 +30,12 @@ impl Into<ggez::mint::Point2<f32>> for Vector2D {
 
 struct Cell {
     mesh: graphics::Mesh,
-    location: [u8; 2]
 }
 
 impl Cell {
-    fn new(mesh: graphics::Mesh, location: [u8; 2]) -> Self {
+    fn new(mesh: graphics::Mesh) -> Self {
         Self {
             mesh,
-            location
         }
     }
 }
@@ -52,12 +50,6 @@ impl NumberText {
             text
         }
     }
-}
-
-enum Direction {
-    UP_RIGHT,
-    RIGHT,
-    DOWN_RIGHT
 }
 
 struct HeadNode {
@@ -84,7 +76,7 @@ impl HeadNode {
     }
 
     pub fn new_move(&mut self, table: [u8; 2], numbers: &mut Vec<Vec<u8>>, menu_sum_numbers: &mut Vec<u8>, current_in_rows_cells_location: &mut Vec<Vec<[u8; 2]>>) -> [u8; 2] {
-        //#
+        println!("Head cell path : {:?}", self.path);
         if self.location[0] as i8 - 1 > -1 && self.location[1] + 1 < table[1] && self.locked_location != [self.location[0] - 1, self.location[1] + 1] && self.locked_location != [self.location[0], self.location[1] + 1] && self.locked_location != [self.location[0] + 1, self.location[1] + 1] {
             self.location[0] -= 1;
             self.location[1] += 1;
@@ -96,7 +88,6 @@ impl HeadNode {
                 unwrap()
             );
             current_in_rows_cells_location[self.start_row as usize].push(self.location);
-            //#
         } else if self.location[1] + 1 < table[1] && self.locked_location != [self.location[0], self.location[1] + 1] && self.locked_location != [self.location[0] + 1, self.location[1] + 1] {
             self.location[1] += 1;
             self.path.push([self.location[0], self.location[1]]);
@@ -107,7 +98,6 @@ impl HeadNode {
                 unwrap()
             );
             current_in_rows_cells_location[self.start_row as usize].push(self.location);
-            //#
         } else if self.location[0] + 1 < table[0] && self.location[1] + 1 < table[1] && self.locked_location != [self.location[0] + 1, self.location[1] + 1] {
             self.location[0] += 1;
             self.location[1] += 1;
@@ -128,9 +118,7 @@ impl HeadNode {
             if self.path.len() != 0 {
                 self.location = *self.path.last().unwrap();
             } else {
-                //#
                 if self.start_row == table[0] - 1 {
-                    println!("Finished :D");
                     self.game_not_finished = false;
                 } else {
                     self.start_row += 1;
@@ -213,12 +201,9 @@ impl GoldMiner {
         let wait_then_solve_in_miliseconds = wait_then_solve_in_miliseconds.get(1).unwrap();
         let wait_then_solve_in_miliseconds: u64 = wait_then_solve_in_miliseconds.parse::<u64>().unwrap();
 
-        let (mut cell_width, mut cell_height) = graphics::drawable_size(context);
-        //#
-        cell_width = 720.0 / table[1] as f32;
-        cell_height = 720.0 / table[0] as f32;
+        let cell_width = 720.0 / table[1] as f32;
+        let cell_height = 720.0 / table[0] as f32;
 
-        let start_row: u8 = 0;
         let rect = graphics::Rect::new(0.0, 0.0, 560.0, 720.0);
         let menu_background = graphics::Mesh::new_rectangle(context, graphics::DrawMode::fill(), rect, graphics::Color::new(0.2, 0.2, 0.2, 1.0)).unwrap();
         let mut menu_texts: Vec<NumberText> = Vec::new();
@@ -241,7 +226,6 @@ impl GoldMiner {
         let mut numbers: Vec<Vec<u8>> = Vec::new();
         let mut texts: Vec<Vec<NumberText>> = Vec::new();
 
-        //#
         for i in 0..table[0] {
             let mut color = graphics::Color::new(1.0, 0.0, 0.0, 1.0);
             match i {
@@ -288,18 +272,14 @@ impl GoldMiner {
             ));
         }
         
-        //#
         for i in 0..table[0] + 1 {
-            //#
             menu_lines.push(graphics::Mesh::new_line(context, &[Vector2D::new(0.0, i as f32 * 720.0 / table[0] as f32), Vector2D::new(560.0, i as f32 * 720.0 / table[0] as f32)], 2.0, graphics::Color::WHITE).unwrap());
         }
         menu_lines.push(graphics::Mesh::new_line(context, &[Vector2D::new(0.0, 0.0), Vector2D::new(0.0, 720.0)], 2.0, graphics::Color::WHITE).unwrap());
 
-        //#
         for i in 0..table[0] as usize {
             cells.push(Vec::new());
             cell_rect.y = i as f32 * cell_height;
-            //#
             for j in 0..table[1] as usize {
                 cell_rect.x = 560.0 + j as f32 * cell_width;
                 cells.get_mut(i).unwrap().push(Cell::new(
@@ -307,17 +287,14 @@ impl GoldMiner {
                         graphics::DrawMode::fill(),
                         cell_rect,
                         graphics::Color::new(0.2, 0.2, 0.2, 1.0)
-                    ).unwrap(),
-                    [i as u8, j as u8]
+                    ).unwrap()
                 ));
             }
         }
 
-        //#
         for i in 0..table[0] as usize {
             borders.push(Vec::new());
             cell_rect.y = i as f32 * cell_height;
-            //#
             for j in 0..table[1] as usize {
                 cell_rect.x = 560.0 + j as f32 * cell_width;
                 borders.get_mut(i).unwrap().push(Cell::new(
@@ -325,17 +302,14 @@ impl GoldMiner {
                         graphics::DrawMode::stroke(2.0),
                         cell_rect,
                         graphics::Color::WHITE
-                    ).unwrap(),
-                    [i as u8, j as u8]
+                    ).unwrap()
                 ));
             }
         }
 
-        //#
         for i in 0..table[0] as usize {
             texts.push(Vec::new());
             numbers.push(Vec::new());
-            //#
             for _j in 0..table[1] as usize {
                 let random_number: u8 = rand::thread_rng().gen_range(0..max_number);
                 numbers.get_mut(i).unwrap().push(random_number);
@@ -367,8 +341,6 @@ impl GoldMiner {
         let mut current_in_rows_cells_location: Vec<Vec<[u8; 2]>> = Vec::new();
         let mut maximum_in_rows_cells_location: Vec<Vec<[u8; 2]>> = Vec::new();
 
-        
-        //#
         for _index in 0..table[0] as usize {
             maximum_in_rows.push(0);
             current_in_rows_cells_location.push(Vec::new());
@@ -523,7 +495,6 @@ impl GoldMiner {
                         new_menu_sum_text.push_str(number.to_string().as_str());
                         new_menu_sum_text.push_str(" + ");
                     }
-                    //#
                     if self.menu_sum_numbers.len() == self.table[1] as usize {
                         new_menu_sum_text.remove(new_menu_sum_text.len() - 2);
                         new_menu_sum_text.push_str("= ");
@@ -550,20 +521,7 @@ impl GoldMiner {
                     )));
                 } else {
                     self.game_not_finished = false;
-                    println!("HAPPEND :D");
-                    for i in 0..self.table[0] as usize {
-                        for j in 0..self.table[1] as usize {
-                            self.texts.get_mut(i).unwrap().get_mut(j).unwrap().text = 
-                                graphics::Text::new(
-                                    graphics::TextFragment::new(
-                                        self.numbers.get(i).unwrap().get(j).unwrap().to_string()
-                                    ).
-                                    font(graphics::Font::default()).
-                                    color(graphics::Color::new(1.0, 1.0, 0.0, 1.0)).
-                                    scale(graphics::PxScale::from(40.0))
-                                );
-                        }
-                    }
+                    println!("Finished :D");
 
                     let mut max_of_max: u16 = 0;
                     let mut i: u8 = 0;
@@ -576,7 +534,7 @@ impl GoldMiner {
                         i += 1;
                     }
                     let mut final_max = String::new();
-                    final_max.push_str("Final Maximum : ");
+                    final_max.push_str("Final Maximum : ?");
                     final_max.push_str(max_of_max.to_string().as_str());
                     self.menu_max_text.text = graphics::Text::new(
                         graphics::TextFragment::new(
@@ -646,7 +604,6 @@ impl GoldMiner {
             i += 1;
         }
 
-        println!("TABLE {:?}", self.table);
         graphics::draw(context, &self.menu_max_text.text, (Vector2D::new(380.0, 680.0), graphics::Color::WHITE)).expect("Can't update final max graphic");
 
         graphics::draw(context, &self.head_node.mesh, graphics::DrawParam::default()).expect("Error can't draw head_node mesh");

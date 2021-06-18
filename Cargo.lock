@@ -998,7 +998,7 @@ dependencies = [
 
 [[package]]
 name = "gold_miner"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "ggez",
  "rand 0.8.4",
