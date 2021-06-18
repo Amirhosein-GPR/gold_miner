@@ -534,7 +534,7 @@ impl GoldMiner {
                         i += 1;
                     }
                     let mut final_max = String::new();
-                    final_max.push_str("Final Maximum : ?");
+                    final_max.push_str("Final Maximum : ");
                     final_max.push_str(max_of_max.to_string().as_str());
                     self.menu_max_text.text = graphics::Text::new(
                         graphics::TextFragment::new(
