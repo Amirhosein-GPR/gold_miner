@@ -330,7 +330,7 @@ impl GoldMiner {
             graphics::Mesh::new_circle(
                 context,
                 graphics::DrawMode::fill(),
-                Vector2D::new(576.0 + 23.0, 60.0),
+                Vector2D::new(576.0 + cell_width / 2.5, cell_height / 1.2),
                 3.0,
                 0.5,
                 graphics::Color::new(1.0, 0.0, 0.0, 1.0)
@@ -483,7 +483,7 @@ impl GoldMiner {
                     self.head_node.mesh = graphics::Mesh::new_circle(
                         context,
                         graphics::DrawMode::fill(),
-                        Vector2D::new(599.0 + new_location[1] as f32 * self.cell_width, 60.0 + new_location[0] as f32 * self.cell_height),
+                        Vector2D::new(576.0 + new_location[1] as f32 * self.cell_width + self.cell_width / 2.5, new_location[0] as f32 * self.cell_height + self.cell_height / 1.2),
                         3.0,
                         0.5,
                         color
